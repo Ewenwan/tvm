@@ -93,6 +93,111 @@ pip install numpy decorator attrs tornado psutil xgboost mypy orderedset antlr4-
 import tvm
 
 
+linux 安装：
+
+https://tvm.apache.org/docs/install/from_source.html#install-from-source
+安装要求：
+gcc版本 >=4.8   c++14    >=5.0
+CMake >=3.5
+python3
+
+sudo apt-get install -y python3 python3-dev python3-setuptools gcc libtinfo-dev zlib1g-dev build-essential cmake libedit-dev libxml2-dev
+
+
+1.	LLVM安装:
+预编译文件安装
+https://github.com/llvm/llvm-project/releases/tag/llvmorg-10.0.0
+https://releases.llvm.org/download.html   这里也有 预编译好的
+
+
+源码安装
+下载源码： https://github.com/llvm/llvm-project/tree/llvmorg-10.0.0
+cd llvm & make build & cd build 
+
+cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi;clang-tools-extra" -DBUILD_SHARED_LIBS=ON -DLLVM_TARGETS_TO_BUILD="AArch64;X86" -DCMAKE_INSTALL_PREFIX=/usr/local -G "Unix Makefiles" ../llvm
+make j8
+#安装
+make install
+
+软件仓库安装:
+第一步，添加相关源
+编辑/etc/apt/sources.list，将以下源加入：
+deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main
+deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main     
+加入完成后需取得数字证书
+wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key|sudo apt-key add -
+然后务必进行apt-get update
+第二步，安装LLVM
+apt-get install clang-6.0 lldb-6.0
+
+
+2.	TVM 安装
+
+git 下载源代码
+git clone --recursive https://github.com/apache/incubator-tvm
+cd incubator-tvm
+git submodule init
+git submodule update
+如果你直接从GitHub上把整个安装包下下来，编译的时候会有问题，需要通过git下载（git下载方法请自行百度哈）才行，而且上边3句话全部要在命令行中运行才行.
+
+切换到指定版本：
+git checkout v0.6.1
+git checkout -b v0.6.1 v0.6.1
+
+修改tvm源码下面的CMakeLists.txt，把USE_LLVM 设置成 ON，也可以根据需要打开其他功能。   	USE_CUDA等可以也打开 
+
+在tvm下新建build文件夹，拷贝配置文件
+mkdir build
+cp cmake/config.cmake  build
+
+修改 config.cmake
+
+set(USE_CUDA OFF) to set(USE_CUDA ON)  其他后端 (OpenCL, RCOM, METAL, VULKAN, …).
+
+调试信息打开 set(USE_GRAPH_RUNTIME ON) and set(USE_GRAPH_RUNTIME_DEBUG ON)
+
+配置LLVM 路径：
+set(USE_LLVM /path/to/your/llvm/bin/llvm-config)  具体路径根据实际情况填写
+
+也可以 设置 set(USE_LLVM ON) 让cmake搜索可用的LLVM.
+
+开始编译：
+cd build
+cmake ..    // 如果需要gdb跟踪源码的话需要加-DCMAKE_BUILD_TYPE=Debug
+make -j4
+
+也可以使用 Ninja 编译
+cd build
+cmake .. -G Ninja
+ninja
+
+
+
+
+
+
+python 环境安装 
+建议安装 conda 管理python环境
+Tvm python 包 在 tvm/python 
+
+增加 tvm python 环境，在 .bashrc 中添加 
+
+vim ~/.bashrc
+export TVM_HOME=/path/to/tvm    路径需要修改
+export PYTHONPATH=$TVM_HOME/python:${PYTHONPATH}
+# export PYTHONPATH=$TVM_PATH/python:$TVM_PATH/topi/python:$TVM_PATH/nnvm/python:${PYTHONPATH}
+source ~/.bashrc
+
+安装依赖：
+
+ pip3 install --user numpy decorator attrs
+ pip3 install --user tornado                 # rpc 
+ pip3 install --user tornado psutil xgboost    # auto-tuning module
+ sudo apt install antlr4
+ pip3 install --user mypy orderedset antlr4-python3-runtime
+
+
+
 
 
 
