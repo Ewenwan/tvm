@@ -1,3 +1,4 @@
+
 <!--- Licensed to the Apache Software Foundation (ASF) under one -->
 <!--- or more contributor license agreements.  See the NOTICE file -->
 <!--- distributed with this work for additional information -->
@@ -15,6 +16,7 @@
 <!--- specific language governing permissions and limitations -->
 <!--- under the License. -->
 
+[参考](https://zhuanlan.zhihu.com/p/71558181)
 
 # Android TVM RPC
 
@@ -290,17 +292,24 @@ ADD_LDLIBS = libOpenCL.so
      * 导入环境变量
        *  export ANDROID_TC=xxx/android-toolchain-arm64
           export PATH=${ANDROID_TC}/bin:$PATH
-     
    * 建立连接
      * 启动代理服务器并使用我们的应用进行连接：
-       * 服务器 python3 -m tvm.exec.rpc_proxy --port 9120 
+       * 服务器 python3 -m tvm.exec.rpc_proxy --host=0.0.0.0 --port=9190 
      * apk连接服务器：
        * 安卓app 打开RPC app 输入ip、端口号等信息连接服务器
-       * ip   : 10.110.6.16
-       * port : 9520 
-       * key  : android
+       * 第一个参数Address ip   : 10.110.6.16   是PC在局域网中的IP地址
+       * port : 9190                            port为启动tracker的端口（默认为9190）
+       * key  : android                         Key为自选的密钥（PC与android通讯时需要进行匹配）
      * 在本地主机查看所有的注册设备：
-       * python3 -m tvm.exec.query_rpc_tracker --port 9120 
+       * python3 -m tvm.exec.query_rpc_tracker --host=0.0.0.0 --port=9190
+       *  出现
        
-       
+Tracker address 0.0.0.0:9190
+
+Server List
+----------------------------
+server-address	key
+----------------------------
+10.110.6.136:57764	server:android
+
        
